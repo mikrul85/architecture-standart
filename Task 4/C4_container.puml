@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+
+title Диаграмма контейнеров системы передачи ставок
+
+System_Boundary(микросервис, "Микросервис депозитов") {
+    Container(api, "API ставок", "Java Spring Boot", "REST эндпоинты")
+    Container(scheduler, "Планировщик", "Quartz", "Генерация файлов")
+    ContainerDb(redis, "Кэш ставок", "Redis", "Хранение актуальных данных")
+}
+
+System(колцентр_банк, "Кол-центр банка", "Внутренняя CRM")
+System(партнер, "Партнерский кол-центр", "Внешняя система")
+
+Rel(api, колцентр_банк, "JSON over REST", "HTTPS")
+Rel(scheduler, партнер, "CSV файл", "SFTP")
+Rel(api, redis, "Чтение/запись", "TCP")
+@enduml
